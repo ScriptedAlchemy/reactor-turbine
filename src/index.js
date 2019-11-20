@@ -109,27 +109,33 @@ if (_satellite && !window.__satelliteLoaded) {
   // Important to hydrate satellite object before we hydrate the module provider or init rules.
   // When we hydrate module provider, we also execute extension code which may be
   // accessing _satellite.
-  hydrateSatelliteObject(
-    _satellite,
-    container,
-    setDebugOutputEnabled,
-    getVar,
-    setCustomVar
-  );
+  window.requestIdleCallback(function() {
+    hydrateSatelliteObject(
+      _satellite,
+      container,
+      setDebugOutputEnabled,
+      getVar,
+      setCustomVar
+    );
+  });
 
-  hydrateModuleProvider(
-    container,
-    moduleProvider,
-    replaceTokens,
-    getDataElementValue
-  );
+  window.requestIdleCallback(function() {
+    hydrateModuleProvider(
+      container,
+      moduleProvider,
+      replaceTokens,
+      getDataElementValue
+    );
+  });
 
-  initRules(
-    _satellite,
-    container.rules || [],
-    moduleProvider,
-    replaceTokens
-  );
+  window.requestIdleCallback(function() {
+    initRules(
+      _satellite,
+      container.rules || [],
+      moduleProvider,
+      replaceTokens
+    );
+  });
 }
 
 // Rollup's iife option always sets a global with whatever is exported, so we'll set the

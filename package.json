@@ -27,7 +27,8 @@
     "@adobe/reactor-object-assign": "*",
     "@adobe/reactor-promise": "*",
     "@adobe/reactor-query-string": "*",
-    "@adobe/reactor-window": "*"
+    "@adobe/reactor-window": "*",
+    "rollup-plugin-node-builtins": "^2.1.2"
   },
   "devDependencies": {
     "camelize": "1.0.0",
