@@ -21,6 +21,7 @@ module.exports = function(_satellite, container, setDebugOutputEnabled, getVar, 
   // included) and our customers are still calling the method. In this case, we don't want an error
   // to be thrown. This method existed before Reactor.
   _satellite.track = function(identifier) {
+    _satelliteEventQueue.push(function() {window._satellite.track(identifier);});
     logger.log('"' + identifier + '" does not match any direct call identifiers.');
   };
 
@@ -118,7 +119,9 @@ module.exports = function(_satellite, container, setDebugOutputEnabled, getVar, 
   // case the customers are not using core (and therefore the pageBottom event delegate won't get
   // included) and they are still calling the method. In this case, we don't want an error
   // to be thrown. This method existed before Reactor.
-  _satellite.pageBottom = function() {};
+  _satellite.pageBottom = function() {
+    _satelliteEventQueue.push(function() {window._satellite.pageBottom();});
+  };
 
   _satellite.setDebug = setDebugOutputEnabled;
 

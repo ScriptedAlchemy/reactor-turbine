@@ -8,9 +8,6 @@ export default {
     file: 'dist/engine.js',
     format: 'iife',
   },
-  globals: {
-    'querystring': 'React',
-  },
   name: '_satellite',
   plugins: [
     resolve({

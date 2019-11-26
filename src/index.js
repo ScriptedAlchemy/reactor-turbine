@@ -21,15 +21,17 @@ var logger = require('./logger');
 var initRules = require('./initRules');
 var dataElementSafe = require('./dataElementSafe');
 var getNamespacedStorage = require('./getNamespacedStorage');
-
+require('custom-event-polyfill');
 var DEBUG_LOCAL_STORAGE_NAME = 'debug';
 
 
 var _satellite = window._satellite;
+window._satelliteEventQueue = [];
 
 if (_satellite && !window.__satelliteLoaded) {
   // If a consumer loads the library multiple times, make sure only the first time is effective.
   window.__satelliteLoaded = true;
+
 
   var container = _satellite.container;
 
@@ -109,15 +111,13 @@ if (_satellite && !window.__satelliteLoaded) {
   // Important to hydrate satellite object before we hydrate the module provider or init rules.
   // When we hydrate module provider, we also execute extension code which may be
   // accessing _satellite.
-  window.requestIdleCallback(function() {
-    hydrateSatelliteObject(
-      _satellite,
-      container,
-      setDebugOutputEnabled,
-      getVar,
-      setCustomVar
-    );
-  });
+  hydrateSatelliteObject(
+    _satellite,
+    container,
+    setDebugOutputEnabled,
+    getVar,
+    setCustomVar
+  );
 
   window.requestIdleCallback(function() {
     hydrateModuleProvider(
@@ -135,6 +135,16 @@ if (_satellite && !window.__satelliteLoaded) {
       moduleProvider,
       replaceTokens
     );
+    window._satelliteEventQueue.reverse().forEach(function(queuedEvent) {
+      try {
+        queuedEvent();
+      } catch (e) {
+        throw new Error('Custom Launch - event queue' + e.message);
+      }
+    });
+    // trigger a custom browser event when Launch is ready
+    var event = new CustomEvent('launch-active');
+    window.dispatchEvent(event);
   });
 }
 

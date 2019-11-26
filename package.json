@@ -28,6 +28,7 @@
     "@adobe/reactor-promise": "*",
     "@adobe/reactor-query-string": "*",
     "@adobe/reactor-window": "*",
+    "custom-event-polyfill": "^1.0.7",
     "rollup-plugin-node-builtins": "^2.1.2"
   },
   "devDependencies": {
