@@ -28,6 +28,15 @@ var DEBUG_LOCAL_STORAGE_NAME = 'debug';
 var _satellite = window._satellite;
 window._satelliteEventQueue = [];
 
+_satellite.track = function(identifier) {
+  _satelliteEventQueue.push(function() {window._satellite.track(identifier);});
+  logger.log('"' + identifier + '" was called while Launch was attempting to boot, queuing');
+};
+
+_satellite.pageBottom = function() {
+  _satelliteEventQueue.push(function() {window._satellite.pageBottom();});
+};
+
 if (_satellite && !window.__satelliteLoaded) {
   // If a consumer loads the library multiple times, make sure only the first time is effective.
   window.__satelliteLoaded = true;
@@ -111,13 +120,15 @@ if (_satellite && !window.__satelliteLoaded) {
   // Important to hydrate satellite object before we hydrate the module provider or init rules.
   // When we hydrate module provider, we also execute extension code which may be
   // accessing _satellite.
-  hydrateSatelliteObject(
-    _satellite,
-    container,
-    setDebugOutputEnabled,
-    getVar,
-    setCustomVar
-  );
+  window.requestIdleCallback(function() {
+    hydrateSatelliteObject(
+      _satellite,
+      container,
+      setDebugOutputEnabled,
+      getVar,
+      setCustomVar
+    );
+  });
 
   window.requestIdleCallback(function() {
     hydrateModuleProvider(
